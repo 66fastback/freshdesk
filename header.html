@@ -1,0 +1,30 @@
+{% assign freshservice_enabled = false %}
+
+<header class="topbar container" data-topbar>
+  <div class="container-inner">
+    <div class="topbar__inner">
+      <div class="topbar__col topbar__col--logo clearfix">
+        <div class="logo-wrapper">
+          <div class="logo">
+            <a href="{% if freshservice_enabled %}/support/home{% else %}{{ portal.linkback_url }}{% endif %}">
+              <img src="https://s3-us-west-2.amazonaws.com/breezythemes/elastifile/logo.png" alt="">
+            </a>
+          </div>
+        </div>
+        <button type="button" role="button" aria-label="Toggle Navigation" class="lines-button x" data-toggle-menu> <span class="lines"></span> </button>
+      </div>
+      <div class="topbar__col topbar__menu">
+        <div class="topbar__collapse" data-menu>
+          <div class="topbar__controls {% if portal.user.id %}topbar__controls--logged-in{% else %}topbar__controls--anonymous{% endif %}">
+            <a class="topbar__link" href="#">Back to website</a>
+            {% unless portal.user.is_agent %}
+              <a class="btn btn-topbar" href="{{portal.new_ticket_url}}">Submit a ticket</a>
+              <a class="btn btn-topbar" href="/support/tickets">My Tickets</a>
+            {% endunless %}
+            {{ portal | welcome_navigation }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

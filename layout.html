@@ -1,0 +1,158 @@
+{% assign freshservice_enabled = false %}
+
+<!-- Notification Messages -->
+{{ page_message }}
+<div class="layout {% if portal.user.id %}layout--logged-in{% else %}layout--anonymous{% endif %}">
+  <div class="layout__header">
+    {{ header }}
+
+    <!-- Search and page links for the page -->
+    {% if portal.current_tab %}
+      {% if portal.current_page == 'portal_home' or portal.current_page == 'search'%}
+        <section class="hero-unit" data-hero-unit>
+          <div class="hero-bg-andrew" data-hero-bg style="background-image: url(https://s3-us-west-2.amazonaws.com/breezythemes/elastifile/hero-bg-newest-resized.png);"></div>
+          <div class="container-inner search-box search-box--hero-unit" data-search-box>
+            <div class="intro-title">{% translate header.help_center %}</div>
+            {% snippet search_form %}
+          </div>
+        </section>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="layout__content">
+    <div class="container">
+      <div class="container-inner clearfix">
+        {% unless freshservice_enabled %}
+          {% if portal.current_page == 'profile_edit' %}<div id="profile-edit">{% endif %}
+        {% endunless %}
+
+        {{ content_for_layout }}
+
+        {% unless freshservice_enabled %}
+          {% if portal.current_page == 'profile_edit' %}</div>{% endif %}
+        {% endunless %}
+      </div>
+    </div>
+  </div>
+
+  <div class="layout__footer">
+    {{ footer }}
+  </div>
+</div>
+<script src="//cdn.jsdelivr.net/jquery.magnific-popup/1.0.0/jquery.magnific-popup.min.js"></script>
+<script>
+  (function($) {
+    function clipper(min, max){
+      return function(o){
+        if(o > max) return max;
+        if(o < min) return min;
+        return o;
+      };
+    }
+
+    var BT_SETTINGS = {
+      css: {
+        activeClass: 'is-active',
+        hiddenClass: 'is-hidden'
+      }
+    };
+
+    var opacityClipper = clipper(0, 1);
+    var $window      = $(window);
+    var $heroUnit    = $('[data-hero-unit]');
+    var $topbar      = $('[data-topbar]');
+    var topbarHeight = parseInt($topbar.height());
+    var $scrollToTop = $('[data-scroll-to-top]');
+    var $heroUnitBg;
+    var $searchBox;
+
+    if ($heroUnit.length) {
+      $heroUnitBg  = $heroUnit.find('[data-hero-bg]');
+      $searchBox   = $heroUnit.find('[data-search-box]');
+    }
+
+    $scrollToTop.click(function(){
+      $('html, body').animate({ scrollTop: 0}, 1000);
+      return false;
+    });
+
+    var bindEffects = function() {
+      var scrolled = $window.scrollTop();
+      if (scrolled > topbarHeight) {
+        $scrollToTop.addClass(BT_SETTINGS.css.activeClass);
+      } else {
+        $scrollToTop.removeClass(BT_SETTINGS.css.activeClass);
+      }
+
+      if ($heroUnit.length) {
+        $heroUnitBg.css({
+          '-moz-transform': 'translate3d(0px,' + scrolled / -3 + 'px' +  ', 0px)',
+          '-webkit-transform': 'translate3d(0px,' + scrolled / -3 + 'px' +  ', 0px)',
+          'transform': 'translate3d(0px,' + scrolled / -3 + 'px' +  ', 0px)'
+        });
+
+        $searchBox.css({
+          'opacity': opacityClipper(1 - opacityClipper(scrolled * 0.003))
+        });
+      }
+    };
+
+    $window.on('scroll.theme', bindEffects);
+
+    $('[data-toggle-menu]').click(function(){
+      $(this).toggleClass(BT_SETTINGS.css.activeClass);
+      $('[data-menu]').toggle();
+    });
+
+    $('.image-with-lightbox').magnificPopup({
+      type: 'image',
+      closeOnContentClick: true,
+      closeBtnInside: false,
+      fixedContentPos: true,
+      mainClass: 'mfp-with-zoom', // class to remove default margin from left and right side
+      image: {
+        verticalFit: true
+      },
+      zoom: {
+        enabled: true,
+        duration: 300 // don't foget to change the duration also in CSS
+      }
+    });
+
+    $('.image-with-video-icon').magnificPopup({
+      disableOn: 700,
+      type: 'iframe',
+      mainClass: 'mfp-fade',
+      removalDelay: 160,
+      preloader: false,
+      fixedContentPos: false
+    });
+
+    $('.accordion__item-title').on('click', function() {
+      var $title = $(this);
+      $title.toggleClass('accordion__item-title--active');
+      $title
+        .parents('.accordion__item')
+        .find('.accordion__item-content')
+        .slideToggle();
+    });
+
+    $('.tabs-link').click(function (e) {
+      e.preventDefault();
+      var $link = $(this);
+      var tabIndex = $link.index();
+      var $tab = $link.parents('.tabs').find('.tab').eq(tabIndex);
+      $link
+        .addClass(BT_SETTINGS.css.activeClass)
+        .siblings()
+        .removeClass(BT_SETTINGS.css.activeClass);
+      $tab
+        .removeClass(BT_SETTINGS.css.hiddenClass)
+        .siblings('.tab')
+        .addClass(BT_SETTINGS.css.hiddenClass);
+    });
+
+    $('.fa-spin').empty();
+  })(jQuery);
+</script>
